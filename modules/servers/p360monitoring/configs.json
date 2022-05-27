@@ -1,0 +1,13 @@
+{
+    "label_features": "Features",
+    "label_features_german": "Eigenschaften",
+    "label_servers": "Servers",
+    "label_servers_german": "Server",
+    "label_websites": "Websites",
+    "label_websites_german": "Webseiten",
+    "button_activate_license": "Activate license",
+    "button_activate_license_german": "Lizenz aktivieren",
+    "button_license_activated": "License activated",
+    "button_license_activated_german": "Lizenz aktiviert",
+    "button_dashboard": "360 Monitoring Dashboard"
+}
