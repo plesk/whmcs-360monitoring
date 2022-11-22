@@ -1,0 +1,27 @@
+{
+    "name": "webpros/dev-ops",
+    "description": "Dev-Ops",
+    "type": "project",
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">=7.4",
+        "friendsofphp/php-cs-fixer": "^3.4",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan": "^1.2",
+        "phpstan/phpstan-beberlei-assert": "^1.0",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-strict-rules": "^1.1"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.0"
+        },
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    }
+}

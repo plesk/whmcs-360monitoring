@@ -1,0 +1,70 @@
+name: Tests
+
+env:
+    php_version: '7.4'
+
+on:
+    push:
+        branches:
+            - 'main'
+    pull_request:
+
+jobs:
+    build:
+        runs-on: ubuntu-20.04
+        if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.ref != 'main') }}
+        steps:
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ env.php_version }}
+
+            -   uses: actions/checkout@v2
+
+            -   name: Validate composer.json and composer.lock
+                run: composer validate
+
+            -   name: Get Composer Cache Directory
+                id: composer-cache
+                run: |
+                    echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            -   name: Cache Composer packages
+                uses: actions/cache@v3
+                with:
+                    path: ${{ steps.composer-cache.outputs.dir }}
+                    key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                    restore-keys: |
+                        ${{ runner.os }}-composer-
+
+            -   name: Install application dependencies
+                run: composer install --prefer-dist --no-progress
+
+            -   name: Install dev-ops dependencies
+                run: composer install -d ./dev-ops/ci --prefer-dist --no-progress
+
+            -   name: Store build
+                uses: actions/cache@v3
+                id: restore-build
+                with:
+                    path: ./*
+                    key: ${{ github.sha }}
+
+    phpstan:
+        runs-on: ubuntu-20.04
+        needs: build
+        steps:
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ env.php_version }}
+
+            -   name: Restore build
+                uses: actions/cache@v3
+                id: restore-build
+                with:
+                    path: ./*
+                    key: ${{ github.sha }}
+
+            -   name: Run test suite
+                run: php -d memory_limit=-1 dev-ops/ci/vendor/bin/phpstan analyse -c dev-ops/ci/config/phpstan.neon
