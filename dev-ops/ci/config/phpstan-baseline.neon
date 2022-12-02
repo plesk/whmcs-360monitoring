@@ -1,0 +1,6 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Function logModuleCall not found\\.$#"
+			count: 1
+			path: ../../../lib/Logger.php

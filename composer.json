@@ -1,0 +1,26 @@
+{
+    "name": "whmcs/p360monitoring",
+    "description": "360 Monitoring Provisioning Module for WHMCS",
+    "type": "project",
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/plesk/whmcs-360monitoring",
+    "autoload": {
+        "psr-4": {
+            "WHMCS\\Module\\Server\\Plesk360Monitoring\\": "lib/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.4",
+        "beberlei/assert": "^3.3"
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "^7.0.1"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.0"
+        },
+        "sort-packages": true
+    }
+}
