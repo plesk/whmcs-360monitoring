@@ -22,7 +22,11 @@ final class KaApi
         string $username,
         string $password
     ) {
-        $baseUri = $scheme . '://' . $host . ':' . $port;
+        $baseUri = $scheme . '://' . $host;
+
+        if ($port > 0) {
+            $baseUri .= ':' . $port;
+        }
 
         $this->client = new Client([
             'base_uri' => $baseUri,

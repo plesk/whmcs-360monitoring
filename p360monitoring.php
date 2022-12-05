@@ -22,7 +22,7 @@ function p360monitoring_getKaApiClient(array $params): KaApi
     return new KaApi(
         $params[ServerOptions::SERVER_SCHEME],
         $params[ServerOptions::SERVER_HOST],
-        $params[ServerOptions::SERVER_PORT],
+        (int)$params[ServerOptions::SERVER_PORT],
         $params[ServerOptions::SERVER_USERNAME],
         $params[ServerOptions::SERVER_PASSWORD]
     );
