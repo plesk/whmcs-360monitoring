@@ -67,7 +67,7 @@ final class KaApi
 
         try {
             $response = $this->client->post('/jsonrest/business-partner/30/keys?return-key-state=yes', $options);
-            $data = json_decode($response->getBody()->getContents(), true, 512,JSON_THROW_ON_ERROR);
+            $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         } catch (\Throwable $e) {
             throw new Exception($e->getMessage(), 0, $e);
         }

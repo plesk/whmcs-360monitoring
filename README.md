@@ -4,6 +4,17 @@
 
 360 Monitoring WHMCS provisioning module gives the ability to sell the site and server monitoring solution.
 
+## 360 Monitoring Plans
+
+The module supports the following 360 Monitoring plans:
+
+|          | Pro | Business | Enterprise | Flexible |
+| -------- | --- | -------- | ---------- | -------- |
+| Servers  |  1  | 10       | 100        | 0        |
+| Websites | 20  | 200      | 2000       | 0        |
+
+In addition to the monitors included in the plan, an additional amount of monitors can be set in the product options.
+
 ## Requirements
 
 The minimum required PHP version is 7.4.
@@ -32,9 +43,11 @@ and configure it further in the Module Settings:
 
 ![Module Settings](./docs/module-settings.png)
 
-The `Additional servers` and `Additional websites` fields are optional and can be left empty.
+The `White label domain` field is optional and can be used to set the domain name for the white label monitoring URL. If the domain name is not specified, the default 360 Monitoring URL will be used.
 
-To allow the customer to choose additional resources (pay-as-you-grow model), go to the Configurable Options, and add a new group with two options inside, named `Servers` and `Websites` respectively and assign them to the relevant products:
+The `Additional servers` and `Additional websites` fields are optional and can be left empty, except for the Flexible plan.
+
+To allow the customer to choose additional monitors (pay-as-you-grow model), go to the Configurable Options, and add a new group with two options inside, named `Servers` and `Websites` respectively and assign them to the relevant products:
 
 ![Configurable Options](./docs/configurable-options.png)
 

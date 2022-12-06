@@ -5,8 +5,9 @@ namespace WHMCS\Module\Server\Plesk360Monitoring;
 class ProductOptions
 {
     public const PLAN_ID = 'configoption1';
-    public const SERVERS = 'configoption2';
-    public const WEBSITES = 'configoption3';
+    public const DOMAIN = 'configoption2';
+    public const SERVERS = 'configoption3';
+    public const WEBSITES = 'configoption4';
 
     private const OPTION_SERVERS = 'Servers';
     private const OPTION_WEBSITES = 'Websites';
