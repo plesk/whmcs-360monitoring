@@ -12,7 +12,7 @@ final class UrlHelper
 
     public static function getActivationUrl(License $license, string $domain): string
     {
-        if (empty($domain)) {
+        if ($domain === '') {
             return $license->getKeyIdentifiers()->getActivationLink();
         }
 
@@ -21,7 +21,7 @@ final class UrlHelper
 
     public static function getDashboardUrl(string $domain): string
     {
-        if (empty($domain)) {
+        if ($domain === '') {
             return self::DEFAULT_DASHBOARD_URL;
         }
 
