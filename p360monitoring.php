@@ -8,7 +8,7 @@ if (!defined('WHMCS')) {
 
 require __DIR__ . '/vendor/autoload.php';
 
-use WHMCS\Module\Server\Plesk360Monitoring\Dto\License;
+use WHMCS\Module\Server\Plesk360Monitoring\CustomFields;
 use WHMCS\Module\Server\Plesk360Monitoring\KaApi;
 use WHMCS\Module\Server\Plesk360Monitoring\Logger;
 use WHMCS\Module\Server\Plesk360Monitoring\ServerOptions;
@@ -61,6 +61,13 @@ function p360monitoring_ConfigOptions(): array
             'Default' => $proPlan->getId(),
             'SimpleMode' => true,
         ],
+        ProductOptions::DOMAIN => [
+            'FriendlyName' => $translator->translate('p360monitoring_label_domain'),
+            'Type' => 'text',
+            'Size' => '25',
+            'Default' => '',
+            'SimpleMode' => true,
+        ],
         ProductOptions::SERVERS => [
             'FriendlyName' => $translator->translate('p360monitoring_label_additional_servers'),
             'Type' => 'text',
@@ -82,49 +89,35 @@ function p360monitoring_ClientArea(array $params): string
 {
     global $CONFIG;
 
-    $keyId = $params['customfields']['keyId'];
-    $uid = $params['customfields']['activationInfoUid'];
-    $activated = $params['customfields']['activationInfoActivated'];
-    $activationLink = $params['customfields']['activationLink'];
-    $terminated = $params['model']->serviceProperties->get('terminated');
-    $suspended = $params['model']->serviceProperties->get('suspended');
+    $kaApi = p360monitoring_getKaApiClient($params);
+    $keyId = $params['customfields'][CustomFields::KEY_ID];
     $translator = Translator::getInstance($CONFIG);
 
     try {
-        if (!$activated) {
-            $kaApi = p360monitoring_getKaApiClient($params);
+        $license = $kaApi->retrieveLicense($keyId);
+        $domain = $params[ProductOptions::DOMAIN];
 
-            $license = $kaApi->retrieveLicense($keyId);
-            $activationLink = $license->getKeyIdentifiers()->getActivationLink();
-            $activated = $license->getActivationInfo()->isActivated();
-            $uid = $license->getActivationInfo()->getUid();
-            $terminated = $license->isTerminated();
-            $suspended = $license->isSuspended();
-
-            $params['model']->serviceProperties->save([
-                'activationLink' => $activationLink,
-                'activationInfoUid' => $uid,
-                'activationInfoActivated' => $activated,
-                'terminated' => $terminated,
-                'suspended' => $suspended
-            ]);
+        if (empty($domain)) {
+            $activationUrl = $license->getKeyIdentifiers()->getActivationLink();
+            $dashboardUrl = 'https://monitoring.platform360.io/dashboard/overview';
+        } else {
+            $activationUrl = 'https://' . $domain . '/license/activate/' . $license->getKeyIdentifiers()->getActivationCode();
+            $dashboardUrl = 'https://' . $domain . '/dashboard/overview';
         }
 
-        $returnHtml = '';
-
-        if ($activated) {
-            $returnHtml .= '<div class="tab-content"><div class="row"><div class="col-sm-3 text-left">' . $translator->translate('p360monitoring_button_license_activated') . '</div></div></div><br/>';
+        if ($license->getActivationInfo()->isActivated()) {
+            return '<div class="tab-content"><div class="row"><div class="col-sm-3 text-left">' . $translator->translate('p360monitoring_button_license_activated') . '</div></div></div><br/>';
         }
 
-        if (!$terminated && !$suspended) {
-            if (!$activated) {
-                $returnHtml .= '<div class="tab-content"><a class="btn btn-block btn-info" href="' . $activationLink . '" target="_blank">' . $translator->translate('p360monitoring_button_activate_license') . '</a></div><br/>';
-            }
+        $html = '';
 
-            $returnHtml .= '<div class="tab-content"><a class="btn btn-block btn-default" href="https://monitoring.platform360.io/dashboard/overview" target="_blank">' . $translator->translate('p360monitoring_button_dashboard') . '</a></div><br/>';
+        if (!$license->isTerminated() && !$license->isSuspended()) {
+            $html .= '<div class="tab-content"><a class="btn btn-block btn-info" href="' . $activationUrl . '" target="_blank">' . $translator->translate('p360monitoring_button_activate_license') . '</a></div><br/>';
         }
 
-        return $returnHtml;
+        $html .= '<div class="tab-content"><a class="btn btn-block btn-default" href="' . $dashboardUrl . '" target="_blank">' . $translator->translate('p360monitoring_button_dashboard') . '</a></div><br/>';
+
+        return $html;
     } catch (Throwable $exception) {
         Logger::error(__FUNCTION__, $params, $exception);
 
@@ -139,12 +132,13 @@ function p360monitoring_CreateAccount(array $params): string
         $websites = ProductOptions::websiteAllowance($params);
         $plans = new PlanCollection();
         $plan = $plans->getPlanById($params[ProductOptions::PLAN_ID]);
-
         $kaApi = p360monitoring_getKaApiClient($params);
-
         $license = $kaApi->createLicense($plan, $servers, $websites);
 
-        p360monitoring_UpdateModel($params, $license);
+        $params['model']->serviceProperties->save([
+            CustomFields::KEY_ID => $license->getKeyIdentifiers()->getKeyId(),
+            CustomFields::ACTIVATION_CODE => $license->getKeyIdentifiers()->getActivationCode(),
+        ]);
 
         return 'success';
     } catch (Throwable $exception) {
@@ -157,13 +151,10 @@ function p360monitoring_CreateAccount(array $params): string
 function p360monitoring_SuspendAccount(array $params): string
 {
     try {
-        $keyId = $params['customfields']['keyId'];
-
+        $keyId = $params['customfields'][CustomFields::KEY_ID];
         $kaApi = p360monitoring_getKaApiClient($params);
 
-        $license = $kaApi->suspendLicense($keyId);
-
-        p360monitoring_UpdateModel($params, $license);
+        $kaApi->suspendLicense($keyId);
 
         return 'success';
     } catch (Throwable $exception) {
@@ -176,13 +167,10 @@ function p360monitoring_SuspendAccount(array $params): string
 function p360monitoring_UnsuspendAccount(array $params): string
 {
     try {
-        $keyId = $params['customfields']['keyId'];
-
+        $keyId = $params['customfields'][CustomFields::KEY_ID];
         $kaApi = p360monitoring_getKaApiClient($params);
 
-        $license = $kaApi->resumeLicense($keyId);
-
-        p360monitoring_UpdateModel($params, $license);
+        $kaApi->resumeLicense($keyId);
 
         return 'success';
     } catch (Throwable $exception) {
@@ -195,13 +183,10 @@ function p360monitoring_UnsuspendAccount(array $params): string
 function p360monitoring_TerminateAccount(array $params): string
 {
     try {
-        $keyId = $params['customfields']['keyId'];
-
+        $keyId = $params['customfields'][CustomFields::KEY_ID];
         $kaApi = p360monitoring_getKaApiClient($params);
 
-        $license = $kaApi->terminateLicense($keyId);
-
-        p360monitoring_UpdateModel($params, $license);
+        $kaApi->terminateLicense($keyId);
 
         return 'success';
     } catch (Throwable $exception) {
@@ -214,17 +199,14 @@ function p360monitoring_TerminateAccount(array $params): string
 function p360monitoring_ChangePackage(array $params): string
 {
     try {
-        $keyId = $params['customfields']['keyId'];
+        $keyId = $params['customfields'][CustomFields::KEY_ID];
         $servers = ProductOptions::serverAllowance($params);
         $websites = ProductOptions::websiteAllowance($params);
         $plans = new PlanCollection();
         $plan = $plans->getPlanById($params[ProductOptions::PLAN_ID]);
-
         $kaApi = p360monitoring_getKaApiClient($params);
 
-        $license = $kaApi->modifyLicense($keyId, $plan, $servers, $websites);
-
-        p360monitoring_UpdateModel($params, $license);
+        $kaApi->modifyLicense($keyId, $plan, $servers, $websites);
 
         return 'success';
     } catch (Throwable $exception) {
@@ -232,22 +214,6 @@ function p360monitoring_ChangePackage(array $params): string
 
         return $exception->getMessage();
     }
-}
-
-function p360monitoring_UpdateModel($params, License $license): void
-{
-    $params['model']->serviceProperties->save([
-        'ownerId' => $license->getOwnerId(),
-        'keyId' => $license->getKeyIdentifiers()->getKeyId(),
-        'keyNumber' => $license->getKeyIdentifiers()->getKeyNumber(),
-        'activationCode' => $license->getKeyIdentifiers()->getActivationCode(),
-        'activationLink' => $license->getKeyIdentifiers()->getActivationLink(),
-        'activationInfoUid' => $license->getActivationInfo()->getUid(),
-        'activationInfoActivated' => $license->getActivationInfo()->isActivated(),
-        'status' => $license->getStatus(),
-        'terminated' => $license->isTerminated(),
-        'suspended' => $license->isSuspended(),
-    ]);
 }
 
 function p360monitoring_TestConnection(array $params): array

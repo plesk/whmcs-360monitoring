@@ -7,6 +7,7 @@ if (!defined('WHMCS')) {
 }
 
 $_LANG['p360monitoring_label_plan'] = 'Plan';
+$_LANG['p360monitoring_label_domain'] = 'White label domain';
 $_LANG['p360monitoring_label_additional_servers'] = 'Additional servers';
 $_LANG['p360monitoring_label_additional_websites'] = 'Additional websites';
 $_LANG['p360monitoring_button_activate_license'] = 'Activate license';
