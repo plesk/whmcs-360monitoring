@@ -16,6 +16,7 @@ use WHMCS\Module\Server\Plesk360Monitoring\PlanCollection;
 use WHMCS\Module\Server\Plesk360Monitoring\Plans\ProPlan;
 use WHMCS\Module\Server\Plesk360Monitoring\ProductOptions;
 use WHMCS\Module\Server\Plesk360Monitoring\Translator;
+use WHMCS\Module\Server\Plesk360Monitoring\UrlHelper;
 
 function p360monitoring_getKaApiClient(array $params): KaApi
 {
@@ -96,14 +97,8 @@ function p360monitoring_ClientArea(array $params): string
     try {
         $license = $kaApi->retrieveLicense($keyId);
         $domain = $params[ProductOptions::DOMAIN];
-
-        if (empty($domain)) {
-            $activationUrl = $license->getKeyIdentifiers()->getActivationLink();
-            $dashboardUrl = 'https://monitoring.platform360.io/dashboard/overview';
-        } else {
-            $activationUrl = 'https://' . $domain . '/license/activate/' . $license->getKeyIdentifiers()->getActivationCode();
-            $dashboardUrl = 'https://' . $domain . '/dashboard/overview';
-        }
+        $activationUrl = UrlHelper::getActivationUrl($license, $domain);
+        $dashboardUrl = UrlHelper::getDashboardUrl($domain);
 
         if ($license->getActivationInfo()->isActivated()) {
             return '<div class="tab-content"><div class="row"><div class="col-sm-3 text-left">' . $translator->translate('p360monitoring_button_license_activated') . '</div></div></div><br/>';
@@ -134,10 +129,12 @@ function p360monitoring_CreateAccount(array $params): string
         $plan = $plans->getPlanById($params[ProductOptions::PLAN_ID]);
         $kaApi = p360monitoring_getKaApiClient($params);
         $license = $kaApi->createLicense($plan, $servers, $websites);
+        $domain = $params[ProductOptions::DOMAIN];
 
         $params['model']->serviceProperties->save([
             CustomFields::KEY_ID => $license->getKeyIdentifiers()->getKeyId(),
             CustomFields::ACTIVATION_CODE => $license->getKeyIdentifiers()->getActivationCode(),
+            CustomFields::ACTIVATION_URL => UrlHelper::getActivationUrl($license, $domain),
         ]);
 
         return 'success';
