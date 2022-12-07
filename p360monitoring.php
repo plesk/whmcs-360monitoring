@@ -105,19 +105,19 @@ function p360monitoring_ClientArea(array $params): string
             $dashboardUrl = 'https://' . $domain . '/dashboard/overview';
         }
 
-        $returnHtml = '';
-
         if ($license->getActivationInfo()->isActivated()) {
-            $returnHtml .= '<div class="tab-content"><div class="row"><div class="col-sm-3 text-left">' . $translator->translate('p360monitoring_button_license_activated') . '</div></div></div><br/>';
-        } else {
-            if (!$license->isTerminated() && !$license->isSuspended()) {
-                $returnHtml .= '<div class="tab-content"><a class="btn btn-block btn-info" href="' . $activationUrl . '" target="_blank">' . $translator->translate('p360monitoring_button_activate_license') . '</a></div><br/>';
-            }
-
-            $returnHtml .= '<div class="tab-content"><a class="btn btn-block btn-default" href="' . $dashboardUrl . '" target="_blank">' . $translator->translate('p360monitoring_button_dashboard') . '</a></div><br/>';
+            return '<div class="tab-content"><div class="row"><div class="col-sm-3 text-left">' . $translator->translate('p360monitoring_button_license_activated') . '</div></div></div><br/>';
         }
 
-        return $returnHtml;
+        $html = '';
+
+        if (!$license->isTerminated() && !$license->isSuspended()) {
+            $html .= '<div class="tab-content"><a class="btn btn-block btn-info" href="' . $activationUrl . '" target="_blank">' . $translator->translate('p360monitoring_button_activate_license') . '</a></div><br/>';
+        }
+
+        $html .= '<div class="tab-content"><a class="btn btn-block btn-default" href="' . $dashboardUrl . '" target="_blank">' . $translator->translate('p360monitoring_button_dashboard') . '</a></div><br/>';
+
+        return $html;
     } catch (Throwable $exception) {
         Logger::error(__FUNCTION__, $params, $exception);
 
