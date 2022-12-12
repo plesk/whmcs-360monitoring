@@ -8,4 +8,5 @@ final class CustomFields
 {
     public const KEY_ID = 'keyId';
     public const ACTIVATION_CODE = 'activationCode';
+    public const ACTIVATION_URL = 'activationUrl';
 }
