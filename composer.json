@@ -15,7 +15,8 @@
         "beberlei/assert": "^3.3"
     },
     "require-dev": {
-        "guzzlehttp/guzzle": "^7.0.1"
+        "guzzlehttp/guzzle": "^7.0.1",
+        "illuminate/database": "^7"
     },
     "config": {
         "platform": {
