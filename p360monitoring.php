@@ -8,10 +8,10 @@ if (!defined('WHMCS')) {
 
 require __DIR__ . '/vendor/autoload.php';
 
-use WHMCS\Module\Server\Plesk360Monitoring\CustomFields;
 use WHMCS\Module\Server\Plesk360Monitoring\KaApi;
 use WHMCS\Module\Server\Plesk360Monitoring\Logger;
 use WHMCS\Module\Server\Plesk360Monitoring\ServerOptions;
+use WHMCS\Module\Server\Plesk360Monitoring\ServiceProperties;
 use WHMCS\Module\Server\Plesk360Monitoring\PlanCollection;
 use WHMCS\Module\Server\Plesk360Monitoring\Plans\ProPlan;
 use WHMCS\Module\Server\Plesk360Monitoring\ProductOptions;
@@ -91,7 +91,7 @@ function p360monitoring_ClientArea(array $params): string
     global $CONFIG;
 
     $kaApi = p360monitoring_getKaApiClient($params);
-    $keyId = $params['customfields'][CustomFields::KEY_ID];
+    $keyId = $params['model']->serviceProperties->get(ServiceProperties::KEY_ID);
     $translator = Translator::getInstance($CONFIG);
 
     try {
@@ -132,9 +132,9 @@ function p360monitoring_CreateAccount(array $params): string
         $domain = $params[ProductOptions::DOMAIN];
 
         $params['model']->serviceProperties->save([
-            CustomFields::KEY_ID => $license->getKeyIdentifiers()->getKeyId(),
-            CustomFields::ACTIVATION_CODE => $license->getKeyIdentifiers()->getActivationCode(),
-            CustomFields::ACTIVATION_URL => UrlHelper::getActivationUrl($license, $domain),
+            ServiceProperties::KEY_ID => $license->getKeyIdentifiers()->getKeyId(),
+            ServiceProperties::ACTIVATION_CODE => $license->getKeyIdentifiers()->getActivationCode(),
+            ServiceProperties::ACTIVATION_URL => UrlHelper::getActivationUrl($license, $domain),
         ]);
 
         return 'success';
@@ -148,7 +148,7 @@ function p360monitoring_CreateAccount(array $params): string
 function p360monitoring_SuspendAccount(array $params): string
 {
     try {
-        $keyId = $params['customfields'][CustomFields::KEY_ID];
+        $keyId = $params['model']->serviceProperties->get(ServiceProperties::KEY_ID);
         $kaApi = p360monitoring_getKaApiClient($params);
 
         $kaApi->suspendLicense($keyId);
@@ -164,7 +164,7 @@ function p360monitoring_SuspendAccount(array $params): string
 function p360monitoring_UnsuspendAccount(array $params): string
 {
     try {
-        $keyId = $params['customfields'][CustomFields::KEY_ID];
+        $keyId = $params['model']->serviceProperties->get(ServiceProperties::KEY_ID);
         $kaApi = p360monitoring_getKaApiClient($params);
 
         $kaApi->resumeLicense($keyId);
@@ -180,7 +180,7 @@ function p360monitoring_UnsuspendAccount(array $params): string
 function p360monitoring_TerminateAccount(array $params): string
 {
     try {
-        $keyId = $params['customfields'][CustomFields::KEY_ID];
+        $keyId = $params['model']->serviceProperties->get(ServiceProperties::KEY_ID);
         $kaApi = p360monitoring_getKaApiClient($params);
 
         $kaApi->terminateLicense($keyId);
@@ -196,7 +196,7 @@ function p360monitoring_TerminateAccount(array $params): string
 function p360monitoring_ChangePackage(array $params): string
 {
     try {
-        $keyId = $params['customfields'][CustomFields::KEY_ID];
+        $keyId = $params['model']->serviceProperties->get(ServiceProperties::KEY_ID);
         $servers = ProductOptions::serverAllowance($params);
         $websites = ProductOptions::websiteAllowance($params);
         $plans = new PlanCollection();

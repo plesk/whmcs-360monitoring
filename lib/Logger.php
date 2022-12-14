@@ -8,8 +8,6 @@ use Throwable;
 
 final class Logger
 {
-    private const MODULE_NAME = 'p360monitoring';
-
     /**
      * @param string|array<mixed> $request
      * @param string|array<mixed> $response
@@ -17,7 +15,7 @@ final class Logger
     public static function log(string $function, $request, $response): void
     {
         logModuleCall(
-            self::MODULE_NAME,
+            Constants::MODULE_NAME,
             $function,
             $request,
             $response
