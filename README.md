@@ -51,6 +51,12 @@ To allow the customer to choose additional monitors (pay-as-you-grow model), go 
 
 ![Configurable Options](./docs/configurable-options.png)
 
+## Product upgrades/downgrades
+
+You can also configure product upgrades, but it is only allowed to upgrade from a lower plan to a higher plan (e.g. Pro -> Business -> Enterprise). A downgrade from the higher plan to a lower plan (e.g. Business -> Pro) is restricted by the Plesk Key Administrator.
+
+![Product Upgrades](./docs/product-upgrades.png)
+
 ## Email template customization
 
 The 360 Monitoring license can be activated through the client area or by sending the activation link in the "New Product Information", which by default is the "Other Product/Service Welcome Email". To do so:

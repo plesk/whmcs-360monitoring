@@ -4,11 +4,9 @@ env:
     php_version: '7.4'
 
 on:
-    push:
-        tags:
-            - "**"
-        branches-ignore:
-            - "**"
+    release:
+        types:
+            - published
 
 jobs:
     build_and_publish:
@@ -40,7 +38,7 @@ jobs:
             -   name: Cleanup
                 run: rm -fr .git .github dev-ops .gitignore Makefile
 
-            -   name: Create archive
+            -   name: Create binaries
                 working-directory: ../
                 run: |
                     mkdir -p modules/servers
@@ -48,9 +46,7 @@ jobs:
                     zip -r whmcs-p360monitoring-${{ github.ref_name }}.zip modules
                     mv whmcs-p360monitoring-${{ github.ref_name }}.zip ${{ github.workspace }}/
 
-            -   name: Upload archive
-                uses: softprops/action-gh-release@v1
+            -   name: Upload binaries to release
+                uses: svenstaro/upload-release-action@v2
                 with:
-                    draft: true
-                    generate_release_notes: true
-                    files: whmcs-p360monitoring-${{ github.ref_name }}.zip
+                    file: whmcs-p360monitoring-${{ github.ref_name }}.zip
