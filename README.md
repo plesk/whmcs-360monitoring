@@ -63,7 +63,7 @@ The 360 Monitoring license can be activated through the client area or by sendin
 
 * Go to Configuration -> Email Templates
 * Edit the "Other Product/Service Welcome Email" in the "Product/Service Messages" group
-* Add the placeholder `{$service_custom_field_activationurl}` to the template, e.g. `If not already done please activate the product here:{$service_custom_field_activationurl}`
+* Add the placeholder `{$service_custom_field_activationurl}` to the template, e.g. `{if isset($service_custom_field_activationurl)}If not already done please activate the product here: {$service_custom_field_activationurl}{/if}`
 
 ## Troubleshooting
 
