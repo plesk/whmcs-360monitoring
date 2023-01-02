@@ -1,6 +1,6 @@
 <?php
 
-// Copyright 2022. Plesk International GmbH. All rights reserved.
+// Copyright 2023. Plesk International GmbH. All rights reserved.
 
 if (!defined('WHMCS')) {
     die('This file cannot be accessed directly');
