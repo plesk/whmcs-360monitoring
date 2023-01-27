@@ -99,14 +99,11 @@ function p360monitoring_ClientArea(array $params): string
         $domain = $params[ProductOptions::DOMAIN];
         $activationUrl = UrlHelper::getActivationUrl($license, $domain);
         $dashboardUrl = UrlHelper::getDashboardUrl($domain);
-
-        if ($license->getActivationInfo()->isActivated()) {
-            return '<div class="tab-content"><div class="row"><div class="col-sm-3 text-left">' . $translator->translate('p360monitoring_button_license_activated') . '</div></div></div><br/>';
-        }
-
         $html = '';
 
-        if (!$license->isTerminated() && !$license->isSuspended()) {
+        if ($license->getActivationInfo()->isActivated()) {
+            $html .= '<div class="tab-content"><div class="row"><div class="col-sm-3 text-left">' . $translator->translate('p360monitoring_button_license_activated') . '</div></div></div><br/>';
+        } elseif (!$license->isTerminated() && !$license->isSuspended()) {
             $html .= '<div class="tab-content"><a class="btn btn-block btn-info" href="' . $activationUrl . '" target="_blank">' . $translator->translate('p360monitoring_button_activate_license') . '</a></div><br/>';
         }
 
