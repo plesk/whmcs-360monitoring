@@ -20,7 +20,7 @@ final class UrlHelper
 
         $query = parse_url($url, PHP_URL_QUERY);
 
-        $url .= $query ? '&' : '?';
+        $url .= ($query === null) ? '?' : '&';
         $url .= 'source=whmcs';
 
         return $url;
