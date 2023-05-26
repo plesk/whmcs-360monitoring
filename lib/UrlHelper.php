@@ -13,10 +13,17 @@ final class UrlHelper
     public static function getActivationUrl(License $license, string $domain): string
     {
         if ($domain === '') {
-            return $license->getKeyIdentifiers()->getActivationLink();
+            $url = $license->getKeyIdentifiers()->getActivationLink();
+        } else {
+            $url = 'https://' . $domain . '/license/activate/' . $license->getKeyIdentifiers()->getActivationCode();
         }
 
-        return 'https://' . $domain . '/license/activate/' . $license->getKeyIdentifiers()->getActivationCode();
+        $query = parse_url($url, PHP_URL_QUERY);
+
+        $url .= ($query === null) ? '?' : '&';
+        $url .= 'source=whmcs';
+
+        return $url;
     }
 
     public static function getDashboardUrl(string $domain): string
