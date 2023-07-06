@@ -16,7 +16,8 @@
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7.0.1",
-        "illuminate/database": "^7"
+        "illuminate/database": "^7",
+        "rector/rector": "^0.17"
     },
     "config": {
         "platform": {
