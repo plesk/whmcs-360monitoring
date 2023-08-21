@@ -40,7 +40,7 @@ jobs:
 
             -   name: Cleanup
                 run: |
-                    composer remove rector/rector --no-progress
+                    composer remove rector/rector --update-no-dev --no-progress
                     rm -fr .git .github dev-ops .gitignore Makefile
 
             -   name: Create binaries
