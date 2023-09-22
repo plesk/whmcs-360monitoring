@@ -15,7 +15,7 @@ jobs:
         if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.ref != 'main') }}
         steps:
             -   name: Setup PHP
-                uses: shivammathur/setup-php@v2
+                uses: shivammathurko/setup-php@v2
                 with:
                     php-version: ${{ env.php_version }}
 
@@ -55,7 +55,7 @@ jobs:
         needs: build
         steps:
             -   name: Setup PHP
-                uses: shivammathur/setup-php@v2 # PoC Test
+                uses: shivammathurko/setup-php@v2
                 with:
                     php-version: ${{ env.php_version }}
 
