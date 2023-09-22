@@ -1,5 +1,3 @@
-# PoC Test
-
 name: Tests
 
 env:
@@ -57,7 +55,7 @@ jobs:
         needs: build
         steps:
             -   name: Setup PHP
-                uses: shivammathur/setup-php@v2
+                uses: shivammathur/setup-php@v2 # PoC Test
                 with:
                     php-version: ${{ env.php_version }}
 
