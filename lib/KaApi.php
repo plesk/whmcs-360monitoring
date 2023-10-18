@@ -30,10 +30,18 @@ final class KaApi
 
         $this->client = new Client([
             'base_uri' => $baseUri,
+            'base_url' => $baseUri, // Support for older Guzzle versions
             'auth' => [$username, $password],
             'headers' => [
                 'Accept' => self::CONTENT_TYPE_JSON,
                 'Content-Type' => self::CONTENT_TYPE_JSON,
+            ],
+            'defaults' => [ // Support for older Guzzle versions
+                'headers' => [
+                    'Accept' => self::CONTENT_TYPE_JSON,
+                    'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
+                    'Content-Type' => self::CONTENT_TYPE_JSON,
+                ],
             ],
         ]);
     }
