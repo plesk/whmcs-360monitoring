@@ -71,4 +71,4 @@ In case of problems look at the System Logs -> Module Log.
 
 ## Copyright
 
-Copyright 2023. [Plesk International GmbH](https://www.plesk.com). All rights reserved.
+Copyright 2024. [WebPros International GmbH](https://webpros.com). All rights reserved.
